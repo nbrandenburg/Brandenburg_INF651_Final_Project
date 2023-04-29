@@ -1,45 +1,45 @@
-// Function 1 - passed
-const createElemWithText = (elemType = "p", text = "", className) => {
-    const myTextElem = document.createElement(elemType);
-    myTextElem.textContent = text;
-    if (className) myTextElem.classList.add(className);
-    return myTextElem;
-};
+// Function 1
+const createElemWithText = (elemType = 'p', textContent = "", className) => {
+  const element = document.createElement(elemType);
+  element.textContent = textContent;
+  if(className) element.classList.add(className);
+  return element;
+}
 
-// Function 2 - passed
+// Function 2
 const createSelectOptions = (users) => {
   if(!users) return;
-  let optionsArray = [];
-  users.forEach(user => {
+  const optionsArray = [];
+  for(let i = 0; i < users.length; i++) {
     const option = document.createElement("option");
-    option.value = user.id;
-    option.textContent = user.name;
+    option.value = users[i].id;
+    option.textContent = users[i].name;
     optionsArray.push(option);
-  }) 
+  }
   return optionsArray;
 };
 
-// Function 3 - passed
+// Function 3
 const toggleCommentSection = (postId) => {
   if(!postId) return;
-  const section = document.querySelector(`section[data-post-id = '${postId}']`);
+  const section = document.querySelector(`section[data-post-id='${postId}']`);
   if(!section?.tagName) return null;
   section.classList.toggle("hide");
   return section;
 };
 
-// Function 4 - passed
+// Function 4
 const toggleCommentButton = (postId) => {
   if(!postId) return;
-  const button = document.querySelector(`button[data-post-id = '${postId}']`);
+  const button = document.querySelector(`button[data-post-id='${postId}']`);
   if(!button?.tagName) return null;
   button.textContent === "Show Comments"
     ? (button.textContent = "Hide Comments")
     : (button.textContent = "Show Comments");
-  return button;
+    return button;
 };
 
-// Function 5 - passed
+// Function 5
 const deleteChildElements = (parentElement) => {
   if(!parentElement?.tagName) return;
   let child = parentElement.lastElementChild;
@@ -50,31 +50,31 @@ const deleteChildElements = (parentElement) => {
   return parentElement;
 };
 
-// Function 6 - passed
+// Function 6
 const addButtonListeners = () => {
-  const buttonsArray = document.querySelectorAll("main > button");
-  buttonsArray.forEach((button) => {
-    const postId = button.dataset.postId;
-    button.addEventListener("click", (event) => {
+  const buttonsArray = document.querySelectorAll("main button");
+  for(let i = 0; i < buttonsArray.length; i++) {
+    const postId = buttonsArray[i].dataset.postId;
+    buttonsArray[i].addEventListener("click", (event) => {
       toggleComments(event, postId);
     })
-  })
+  }
   return buttonsArray;
 };
 
-// Function 7 - passed
+// Function 7
 const removeButtonListeners = () => {
-  const buttonsArray = document.querySelectorAll("main > button");
-  buttonsArray.forEach((button) => {
-    const postId = button.dataset.id;
-    button.removeEventListener("click", (event) => {
+  const buttonsArray = document.querySelectorAll("main button");
+  for(let i = 0; i < buttonsArray.length; i++) {
+    const postId = buttonsArray[i].dataset.id;
+    buttonsArray[i].removeEventListener("click", (event) => {
       toggleComments(event, postId);
     })
-  })
+  }
   return buttonsArray;
 };
 
-// Function 8 - passed
+// Function 8 
 const createComments = (comments) => {
   if(!comments) return;
   let fragment = document.createDocumentFragment();
@@ -89,31 +89,29 @@ const createComments = (comments) => {
   return fragment;
 };
 
-// Function 9 - passed
+// Function 9
 const populateSelectMenu = (users) => {
   if(!users) return;
-  const menuElement = document.getElementById("selectMenu");
-  let optionsArray = createSelectOptions(users);
-  optionsArray.forEach((option) => {
-    menuElement.append(option);
-  });
-  return menuElement;
+  const menu = document.querySelector("#selectMenu");
+  const optionsArray = createSelectOptions(users);
+  for(let i = 0; i < optionsArray.length; i++) {
+    menu.append(optionsArray[i]);
+  }
+  return menu;
 };
 
-// Async / Await Functions
-// Function 10 - passed
+// Function 10
 const getUsers = async() => {
-  try{
+  try {
     const response = await fetch("https://jsonplaceholder.typicode.com/users");
-    if(!response.ok) throw new Error("Error");
-    const users = await response.json();
-    return users;
+    if(!response.ok) throw new Error("Error retrieving users data");
+    return await response.json();
   } catch (err) {
     console.error(err);
   }
 };
 
-// Function 11 - passed
+// Function 11
 const getUserPosts = async(userId) => {
   if(!userId) return;
   try{
@@ -129,7 +127,7 @@ const getUserPosts = async(userId) => {
   }
 };
 
-// Function 12 - passed
+// Function 12
 const getUser = async(userId) => {
   if(!userId) return;
   try {
@@ -148,7 +146,7 @@ const getUser = async(userId) => {
   }
 };
 
-// Function 13 - passed
+// Function 13 
 const getPostComments = async(postId) => {
   if(!postId) return;
   try {
@@ -161,7 +159,7 @@ const getPostComments = async(postId) => {
   }
 };
 
-// Function 14 - passed
+// Function 14
 const displayComments = async(postId) => {
   if(!postId) return;
   const section = document.createElement("section");
@@ -173,19 +171,19 @@ const displayComments = async(postId) => {
   return section;
 };
 
-// Function 15 - passed
+// Function 15
 const createPosts = async(posts) => {
   if(!posts) return;
   const fragment = document.createDocumentFragment();
   for(let i = 0; i < posts.length; i++) {
-    const article = document.createElement('article');
-    const h2 = createElemWithText('h2', posts[i].title);
-    const p1 = createElemWithText('p', posts[i].body);
-    const p2 = createElemWithText('p', `Post ID: ${posts[i].id}`);
+    const article = document.createElement("article");
+    const h2 = createElemWithText("h2", posts[i].title);
+    const p1 = createElemWithText("p", posts[i].body);
+    const p2 = createElemWithText("p", `Post ID: ${posts[i].id}`);
     const author = await getUser(posts[i].userId);
-    const p3 = createElemWithText('p', `Author: ${author.name} with ${author.company.name}`);
-    const p4 = createElemWithText('p', author.company.catchPhrase);
-    const button = createElemWithText('button', "Show Comments");
+    const p3 = createElemWithText("p", `Author: ${author.name} with ${author.company.name}`);
+    const p4 = createElemWithText("p", author.company.catchPhrase);
+    const button = createElemWithText("button", "Show Comments");
     button.dataset.postId = posts[i].id;
     article.append(h2, p1, p2, p3, p4, button);
     const section = await displayComments(posts[i].id);
@@ -211,8 +209,7 @@ const displayPosts = async(posts) => {
   }  
 };
 
-// Procedural Functions
-// Function 17 - passed
+// Function 17
 const toggleComments = (event, postId) => {
   if(!event) return;
   if(!postId) return;
@@ -243,26 +240,15 @@ const selectMenuChangeEventHandler = async(event) => {
   return [userId, posts, refreshPostsArray];
 };
 
-// Function 20 - passed
+// Function 20
 const initPage = async() => {
   const users = await getUsers();
-  const select = populateSelectMenu(users);
-  return [users, select];
+  return populateSelectMenu(users);
 };
 
-// Function 21 - passed
+// Function 21
 const initApp = () => {
   initPage();
-  const selectMenu = document.getElementById("selectMenu");
-  selectMenu.addEventListener("readystatechange", (event) => {
-    if(event.target.readyState === "complete") {
-      selectMenuChangeEventHandler(event);
-    }
-  })
 };
 
-document.addEventListener("DOMContentLoaded", (event) => {
-  if (event.target.readyState === "complete") {
-    initApp();
-  }
-});
+document.addEventListener("DOMContentLoaded", (initApp()));
