@@ -54,7 +54,7 @@ const deleteChildElements = (parentElement) => {
 const addButtonListeners = () => {
   const buttonsArray = document.querySelectorAll("main button");
   for(let i = 0; i < buttonsArray.length; i++) {
-    const postId = buttonsArray[i].dataset.postId;
+    let postId = buttonsArray[i].dataset.postId;
     buttonsArray[i].addEventListener("click", (event) => {
       toggleComments(event, postId);
     })
@@ -66,7 +66,7 @@ const addButtonListeners = () => {
 const removeButtonListeners = () => {
   const buttonsArray = document.querySelectorAll("main button");
   for(let i = 0; i < buttonsArray.length; i++) {
-    const postId = buttonsArray[i].dataset.id;
+    let postId = buttonsArray[i].dataset.id;
     buttonsArray[i].removeEventListener("click", (event) => {
       toggleComments(event, postId);
     })
@@ -78,14 +78,14 @@ const removeButtonListeners = () => {
 const createComments = (comments) => {
   if(!comments) return;
   let fragment = document.createDocumentFragment();
-  comments.forEach((comment) => {
-    const myArticle = document.createElement('article');
-    const myH3 = createElemWithText('h3', comment.name);
-    const myP1 = createElemWithText('p', comment.body);
-    const myP2 = createElemWithText('p', `From: ${comment.email}`);
+  for(let i = 0; i < comments.length; i++) {
+    const myArticle = document.createElement("article");
+    const myH3 = createElemWithText("h3", comments[i].name);
+    const myP1 = createElemWithText("p", comments[i].body);
+    const myP2 = createElemWithText("p", `From: ${comments[i].email}`);
     myArticle.append(myH3, myP1, myP2);
-    fragment.append(myArticle);    
-  })
+    fragment.append(myArticle); 
+  }
   return fragment;
 };
 
@@ -193,7 +193,7 @@ const createPosts = async(posts) => {
   return fragment;
 };
 
-// Function 16 - passed
+// Function 16
 const displayPosts = async(posts) => {
   const main = document.querySelector('main');
   const fragment = document.createDocumentFragment();
@@ -223,10 +223,14 @@ const toggleComments = (event, postId) => {
 const refreshPosts = async(posts) => {
   if(!posts) return;
   const removeButtons = removeButtonListeners();
-  const main = deleteChildElements('main');
+  const main = deleteChildElements("main");
+  let mainButtons = document.querySelectorAll("main button");
+  for(let i = 0; i < mainButtons.length; i++) {
+    mainButtons[i].remove();
+  }
   const fragment = await displayPosts(posts);
   const addButtons = addButtonListeners();
-  return [removeButtons, main, fragment, addButtons];
+  return[removeButtons, main, fragment, addButtons];
 };
 
 // Function 19 - NOT passed, refreshPostArray wrong length
@@ -243,12 +247,15 @@ const selectMenuChangeEventHandler = async(event) => {
 // Function 20
 const initPage = async() => {
   const users = await getUsers();
-  return populateSelectMenu(users);
+  const select = populateSelectMenu(users);
+  return [users, select];
 };
 
 // Function 21
 const initApp = () => {
   initPage();
+  const menu = document.querySelector("#selectMenu");
+  menu.addEventListener("change", (selectMenuChangeEventHandler));
 };
 
 document.addEventListener("DOMContentLoaded", (initApp()));
