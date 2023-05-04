@@ -6,7 +6,7 @@ const createElemWithText = (elemType = 'p', textContent = "", className) => {
   return element;
 }
 
-// Function 2
+//Function 2
 const createSelectOptions = (users) => {
   if(!users) return;
   const optionsArray = [];
@@ -39,9 +39,9 @@ const toggleCommentButton = (postId) => {
     return button;
 };
 
-// Function 5
+//Function 5
 const deleteChildElements = (parentElement) => {
-  if(!parentElement?.tagName) return;
+  if(!(parentElement instanceof Element)) return;
   let child = parentElement.lastElementChild;
   while(child) {
   parentElement.removeChild(child);
@@ -89,7 +89,7 @@ const createComments = (comments) => {
   return fragment;
 };
 
-// Function 9
+//Function 9
 const populateSelectMenu = (users) => {
   if(!users) return;
   const menu = document.querySelector("#selectMenu");
@@ -100,7 +100,7 @@ const populateSelectMenu = (users) => {
   return menu;
 };
 
-// Function 10
+//Function 10
 const getUsers = async() => {
   try {
     const response = await fetch("https://jsonplaceholder.typicode.com/users");
@@ -224,16 +224,12 @@ const refreshPosts = async(posts) => {
   if(!posts) return;
   const removeButtons = removeButtonListeners();
   const main = deleteChildElements("main");
-  let mainButtons = document.querySelectorAll("main button");
-  for(let i = 0; i < mainButtons.length; i++) {
-    mainButtons[i].remove();
-  }
   const fragment = await displayPosts(posts);
   const addButtons = addButtonListeners();
   return[removeButtons, main, fragment, addButtons];
 };
 
-// Function 19 - NOT passed, refreshPostArray wrong length
+//Function 19 - NOT passed, refreshPostArray wrong length
 const selectMenuChangeEventHandler = async(event) => {
   if(!event) return;
   document.getElementsByClassName("selectMenu").disabled = true;
@@ -244,17 +240,17 @@ const selectMenuChangeEventHandler = async(event) => {
   return [userId, posts, refreshPostsArray];
 };
 
-// Function 20
+//Function 20
 const initPage = async() => {
   const users = await getUsers();
   const select = populateSelectMenu(users);
   return [users, select];
 };
 
-// Function 21
-const initApp = () => {
+//Function 21
+const initApp = async() => {
   initPage();
-  const menu = document.querySelector("#selectMenu");
+  const menu = document.getElementById("selectMenu");
   menu.addEventListener("change", (selectMenuChangeEventHandler));
 };
 
