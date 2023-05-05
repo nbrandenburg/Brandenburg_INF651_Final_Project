@@ -53,25 +53,25 @@ const deleteChildElements = (parentElement) => {
 // Function 6
 const addButtonListeners = () => {
   const buttonsArray = document.querySelectorAll("main button");
-  for(let i = 0; i < buttonsArray.length; i++) {
+  if(buttonsArray) {
+    for(let i = 0; i < buttonsArray.length; i++) {
     let postId = buttonsArray[i].dataset.postId;
-    buttonsArray[i].addEventListener("click", (event) => {
-      toggleComments(event, postId);
-    })
+    buttonsArray[i].addEventListener("click", function (e) {toggleComments(e, postId)});
   }
   return buttonsArray;
+  }  
 };
 
 // Function 7
 const removeButtonListeners = () => {
   const buttonsArray = document.querySelectorAll("main button");
-  for(let i = 0; i < buttonsArray.length; i++) {
+  if(buttonsArray) {
+    for(let i = 0; i < buttonsArray.length; i++) {
     let postId = buttonsArray[i].dataset.id;
-    buttonsArray[i].removeEventListener("click", (event) => {
-      toggleComments(event, postId);
-    })
+    buttonsArray[i].removeEventListener("click", function (e) {toggleComments(e, postId)});
   }
   return buttonsArray;
+  }  
 };
 
 // Function 8 
@@ -79,12 +79,12 @@ const createComments = (comments) => {
   if(!comments) return;
   let fragment = document.createDocumentFragment();
   for(let i = 0; i < comments.length; i++) {
-    const myArticle = document.createElement("article");
-    const myH3 = createElemWithText("h3", comments[i].name);
-    const myP1 = createElemWithText("p", comments[i].body);
-    const myP2 = createElemWithText("p", `From: ${comments[i].email}`);
-    myArticle.append(myH3, myP1, myP2);
-    fragment.append(myArticle); 
+    const article = document.createElement("article");
+    const h3 = createElemWithText("h3", comments[i].name);
+    const p1 = createElemWithText("p", comments[i].body);
+    const p2 = createElemWithText("p", `From: ${comments[i].email}`);
+    article.append(h3, p1, p2);
+    fragment.append(article); 
   }
   return fragment;
 };
@@ -115,13 +115,9 @@ const getUsers = async() => {
 const getUserPosts = async(userId) => {
   if(!userId) return;
   try{
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-    if(!response.ok) throw new Error("Error");
-    const posts = await response.json();
-    const targetUserPosts = posts.filter(post => {
-      return post.userId === userId;
-    })
-    return targetUserPosts;
+    const response = await fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`);
+    if(!response.ok) throw new Error("Error retrieving posts data");
+    return await response.json();
   } catch (err) {
     console.error(err);
   }
@@ -131,16 +127,9 @@ const getUserPosts = async(userId) => {
 const getUser = async(userId) => {
   if(!userId) return;
   try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/users");
-    if(!response.ok) throw new Error("Error");
-    const users = await response.json();
-    let targetUser;
-    users.forEach(user => {
-      if(user.id === userId) {
-        targetUser = user;
-      }
-    })
-    return targetUser;
+    const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+    if(!response.ok) throw new Error("Error retrieving user data");
+    return await response.json();
   } catch (err) {
     console.error(err);
   }
@@ -151,7 +140,7 @@ const getPostComments = async(postId) => {
   if(!postId) return;
   try {
     const response = await fetch(`https://jsonplaceholder.typicode.com/comments?postId=${postId}`);
-    if(!response.ok) throw new Error("Error");
+    if(!response.ok) throw new Error("Error retrieving comments");
     const comments = await response.json();
     return comments;
   } catch (err) {
@@ -184,10 +173,9 @@ const createPosts = async(posts) => {
     const p3 = createElemWithText("p", `Author: ${author.name} with ${author.company.name}`);
     const p4 = createElemWithText("p", author.company.catchPhrase);
     const button = createElemWithText("button", "Show Comments");
-    button.dataset.postId = posts[i].id;
-    article.append(h2, p1, p2, p3, p4, button);
+    button.dataset.postId = posts[i].id;    
     const section = await displayComments(posts[i].id);
-    article.append(section);
+    article.append(h2, p1, p2, p3, p4, button, section);
     fragment.append(article);
   }  
   return fragment;
@@ -195,18 +183,11 @@ const createPosts = async(posts) => {
 
 // Function 16
 const displayPosts = async(posts) => {
-  const main = document.querySelector('main');
-  const fragment = document.createDocumentFragment();
-  if(!posts) {
-    const p = createElemWithText('p', "Select an Employee to display their posts.", 'default-text');
-    return p;
-  }
-  else {
-    const element = await createPosts(posts);
-    fragment.append(element);
-    main.append(fragment);
-    return fragment;
-  }  
+  const main = document.querySelector("main");
+  const element = (posts) ? (await createPosts(posts))
+    : (createElemWithText("p", "Select an Employee to display their posts.", "default-text"));
+  main.append(element);
+  return element;
 };
 
 // Function 17
@@ -223,35 +204,37 @@ const toggleComments = (event, postId) => {
 const refreshPosts = async(posts) => {
   if(!posts) return;
   const removeButtons = removeButtonListeners();
-  const main = deleteChildElements("main");
+  const main = document.getElementsByTagName("main");
+  deleteChildElements(main);
   const fragment = await displayPosts(posts);
   const addButtons = addButtonListeners();
-  return[removeButtons, main, fragment, addButtons];
+  return [removeButtons, main, fragment, addButtons];
 };
 
-//Function 19 - NOT passed, refreshPostArray wrong length
+//Function 19 - NOT passed, refreshPostsArray wrong length
 const selectMenuChangeEventHandler = async(event) => {
   if(!event) return;
-  document.getElementsByClassName("selectMenu").disabled = true;
+  const selectMenu = document.getElementById("selectMenu");
+  selectMenu.disabled = true;
   const userId = event?.target?.value || 1;
   const posts = await getUserPosts(userId);
   const refreshPostsArray = await refreshPosts(posts);
-  document.getElementsByClassName("selectMenu").disabled = false;
+  selectMenu.disabled = false;
   return [userId, posts, refreshPostsArray];
 };
 
-//Function 20
+// Function 20
 const initPage = async() => {
   const users = await getUsers();
   const select = populateSelectMenu(users);
   return [users, select];
 };
 
-//Function 21
-const initApp = async() => {
+// Function 21
+const initApp = () => {
   initPage();
   const menu = document.getElementById("selectMenu");
-  menu.addEventListener("change", (selectMenuChangeEventHandler));
+  menu.addEventListener("change", selectMenuChangeEventHandler);
 };
 
-document.addEventListener("DOMContentLoaded", (initApp()));
+document.addEventListener("DOMContentLoaded", initApp);
