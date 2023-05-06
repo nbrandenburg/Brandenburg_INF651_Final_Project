@@ -1,3 +1,7 @@
+// Nicole Brandenburg
+// INF 651
+// Final Project
+
 // Function 1
 const createElemWithText = (elemType = 'p', textContent = "", className) => {
   const element = document.createElement(elemType);
@@ -53,25 +57,21 @@ const deleteChildElements = (parentElement) => {
 // Function 6
 const addButtonListeners = () => {
   const buttonsArray = document.querySelectorAll("main button");
-  if(buttonsArray) {
     for(let i = 0; i < buttonsArray.length; i++) {
     let postId = buttonsArray[i].dataset.postId;
     buttonsArray[i].addEventListener("click", function (e) {toggleComments(e, postId)});
   }
   return buttonsArray;
-  }  
 };
 
 // Function 7
 const removeButtonListeners = () => {
   const buttonsArray = document.querySelectorAll("main button");
-  if(buttonsArray) {
     for(let i = 0; i < buttonsArray.length; i++) {
     let postId = buttonsArray[i].dataset.id;
     buttonsArray[i].removeEventListener("click", function (e) {toggleComments(e, postId)});
   }
   return buttonsArray;
-  }  
 };
 
 // Function 8 
@@ -200,7 +200,7 @@ const toggleComments = (event, postId) => {
   return [section, button];
 };
 
-// Function 18 - NOT passed, wrong number of addButtons?
+// Function 18 
 const refreshPosts = async(posts) => {
   if(!posts) return;
   const removeButtons = removeButtonListeners();
@@ -211,7 +211,7 @@ const refreshPosts = async(posts) => {
   return [removeButtons, main, fragment, addButtons];
 };
 
-//Function 19 - NOT passed, refreshPostsArray wrong length
+//Function 19 
 const selectMenuChangeEventHandler = async(event) => {
   if(!event) return;
   const selectMenu = document.getElementById("selectMenu");
